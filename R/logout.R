@@ -49,7 +49,23 @@ logoutButton <- function(label = "Log out", ..., id = "._auth0logout_") {
 logout_url <- function() {
 
   config <- auth0_config()
-
+  
+  # Check if redirect_uri has _state_id_ in. If yes, remove it
+  if (grepl("_state_id_",redirect_uri)) {
+    tmp <- strsplit(redirect_uri,"\\?")
+    base <- tmp[[1]][1]
+    query <- tmp[[1]][2]
+       
+    if (grepl("&",query)) {
+      tmp <- strsplit(query,"&")[[1]]
+      tmp <- paste0(tmp[-which(grepl("_state_id_",tmp))],collapse="&")
+      redirect_uri <- paste0(base,"?",tmp)
+    }
+    else {
+      redirect_uri <- base
+    }
+  }
+  
   app_url_enc <- utils::URLencode(redirect_uri, reserved = TRUE)
   logout_url <- sprintf("%s/v2/logout?client_id=%s&returnTo=%s",
                         config$auth0_config$api_url,

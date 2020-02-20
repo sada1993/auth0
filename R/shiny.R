@@ -70,7 +70,7 @@ auth0_ui <- function(ui, info) {
             redirect_uri <- paste0("http://",req$HTTP_HOST, req$PATH_INFO, query)
           }
         }
-        redirect_uri <<- redirect_uri
+        redirect_uri <<- utils::URLencode(redirect_uri)
 
         url <- httr::oauth2.0_authorize_url(
           info$api, info$app(redirect_uri), scope = info$scope, state = info$state

@@ -42,19 +42,35 @@ auth0_ui <- function(ui, info) {
         params$code <- NULL
         params$state <- NULL
 
-        query <- paste0("/?", paste(
+        
+        query <- paste0("?",paste(
           mapply(paste, names(params), params, MoreArgs = list(sep = "=")),
           collapse = "&"))
         if (!is.null(info$remote_url) && info$remote_url != "" && !getOption("auth0_local")) {
-          redirect_uri <- info$remote_url
+          # Changes to accomodate saved state when using a remote url (mainly
+          # the _state_id_ query)
+          if (query == "?") {
+            redirect_uri <- info$remote_url
+          }
+          else {
+            # If remote url ends with a slash it must be stripped because of
+            # auth0 parsing (https://auth0.com/docs/api/authentication)
+            # Alternatively, this can be placed in auth0_config
+            if (substr(redirect_uri,nchar(redirect_uri),nchar(redirect_uri)) == "/")
+              redirect_uri <- substr(redirect_uri,1,nchar(redirect_uri)-1)
+            redirect_uri <- paste0(info$remote_url,query)
+          }
         } else {
           if (grepl("127.0.0.1", req$HTTP_HOST)) {
-            redirect_uri <- paste0("http://", gsub("127.0.0.1", "localhost", req$HTTP_HOST, query))
+            #redirect_uri <- paste0("http://", gsub("127.0.0.1", "localhost", req$HTTP_HOST, query))
+            redirect_uri <- paste0("http://", gsub("127.0.0.1","localhost", req$HTTP_HOST,
+              req$PATH_INFO,query))
           } else {
-            redirect_uri <- paste0("http://", req$HTTP_HOST, query)
+            #redirect_uri <- paste0("http://", req$HTTP_HOST, query)
+            redirect_uri <- paste0("http://",req$HTTP_HOST, req$PATH_INFO, query)
           }
         }
-        redirect_uri <<- redirect_uri
+        redirect_uri <<- utils::URLencode(redirect_uri)
 
         query_extra <- if(is.null(info$audience)) list() else list(audience=info$audience)
         url <- httr::oauth2.0_authorize_url(

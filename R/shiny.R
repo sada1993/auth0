@@ -32,7 +32,7 @@ auth0_ui <- function(ui, info) {
   if (missing(info)) info <- auth0_info()
   function(req) {
     query_string <- shiny::parseQueryString(req$QUERY_STRING)
-    cat("Trying Again:\n  Error:", query_string$error,"\n  Code:",query_string$code,"\n  State:",query_string$state,"\n")
+    cat("Trying Again:\n  Error:", query_string$error,"\n  Code:",query_string$code,"\n  State:",query_string$state,"\n","  Internal State State:",info$state,"\n")
     verify <- has_auth_code(query_string, info$state)
     cat("  Verification:",verify,"\n")
     if (!verify) {

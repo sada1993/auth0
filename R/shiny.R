@@ -72,6 +72,7 @@ auth0_ui <- function(ui, info) {
             redirect_uri <- paste0("http://",req$HTTP_HOST, req$PATH_INFO, query)
           }
         }
+        cat("  Redirect URI:",redirect_uri,"\n")
         redirect_uri <<- utils::URLencode(redirect_uri)
 
         query_extra <- if(is.null(info$audience)) list() else list(audience=info$audience)
@@ -79,7 +80,9 @@ auth0_ui <- function(ui, info) {
           info$api, info$app(redirect_uri), scope = info$scope, state = info$state,
           query_extra=query_extra
         )
-        redirect <- sprintf("location.replace(\"%s\");", url)
+        redirect <- sprintf("location.replace(\"%s\");", URLdecode(url))
+
+        cat("  Final Redirect URI:",URLdecode(url),"\n")
         shiny::tags$script(shiny::HTML(redirect))
       }
     } else {

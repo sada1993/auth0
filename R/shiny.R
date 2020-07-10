@@ -34,6 +34,7 @@ auth0_ui <- function(ui, info) {
     query_string <- shiny::parseQueryString(req$QUERY_STRING)
     cat("Trying Again:\n  Error:", query_string$error,"\n  Code:",query_string$code,"\n  State:",query_string$state,"\n")
     verify <- has_auth_code(query_string, info$state)
+    cat("  Verification:",verify,"\n")
     if (!verify) {
       if (grepl("error=unauthorized", req$QUERY_STRING)) {
         redirect <- sprintf("location.replace(\"%s\");", logout_url())
@@ -80,7 +81,7 @@ auth0_ui <- function(ui, info) {
           info$api, info$app(redirect_uri), scope = info$scope, state = info$state,
           query_extra=query_extra
         )
-        redirect <- sprintf("location.replace(\"%s\");", URLdecode(url))
+        redirect <- sprintf("location.replace(\"%s\");", url)
 
         cat("  Final Redirect URI:",URLdecode(url),"\n")
         shiny::tags$script(shiny::HTML(redirect))

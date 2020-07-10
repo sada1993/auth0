@@ -29,7 +29,7 @@ auth0_server_verify <- function(session, app, api, state) {
       verb = "GET"
       , url = userinfo_url
       , httr::config(token = token)
-      , times = 5
+      , times = 1
     )
 
     assign("auth0_credentials", token$credentials, envir = session$userData)

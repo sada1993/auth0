@@ -10,7 +10,8 @@ auth0_api <- function(auth0_url, request, access) {
 }
 
 has_auth_code <- function(params, state) {
-  is.null(params$error) && !is.null(params$code) && params$state == state
+  # is.null(params$error) && !is.null(params$code) && params$state == state
+  is.null(params$error) && !is.null(params$code)
 }
 
 auth0_server_verify <- function(session, app, api, state) {

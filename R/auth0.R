@@ -19,7 +19,7 @@ auth0_server_verify <- function(session, app, api, state) {
   params <- shiny::parseQueryString(u_search)
 
   if (has_auth_code(params, state)) {
-    cred <- httr::oauth2.0_access_token(api, app(redirect_uri), params$code)
+    cred <- httr::oauth2.0_access_token(api, app(redirect_uri), params$code) #Cant reload app because this is causing the failure
     token <- httr::oauth2.0_token(
       app = app(redirect_uri), endpoint = api, cache = FALSE, credentials = cred,
       user_params = list(grant_type = "authorization_code"))
@@ -29,7 +29,7 @@ auth0_server_verify <- function(session, app, api, state) {
       verb = "GET"
       , url = userinfo_url
       , httr::config(token = token)
-      , times = 1
+      , times = 5
     )
 
     assign("auth0_credentials", token$credentials, envir = session$userData)

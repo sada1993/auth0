@@ -31,6 +31,7 @@
 auth0_ui <- function(ui, info) {
   if (missing(info)) info <- auth0_info()
   function(req) {
+    cat("Trying Again \n")
     verify <- has_auth_code(shiny::parseQueryString(req$QUERY_STRING), info$state)
     if (!verify) {
       if (grepl("error=unauthorized", req$QUERY_STRING)) {
@@ -42,7 +43,7 @@ auth0_ui <- function(ui, info) {
         params$code <- NULL
         params$state <- NULL
 
-        
+
         query <- paste0("?",paste(
           mapply(paste, names(params), params, MoreArgs = list(sep = "=")),
           collapse = "&"))

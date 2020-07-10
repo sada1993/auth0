@@ -39,7 +39,9 @@ auth0_server_verify <- function(session, app, api, state) {
 }
 
 auth0_state <- function(server) {
-  paste(sample(c(letters, LETTERS, 0:9), 10, replace = TRUE), collapse = "")
+  state <- paste(sample(c(letters, LETTERS, 0:9), 10, replace = TRUE), collapse = "")
+  cat("REGENERATING LOCAL STATE: ",state,"\n")
+  return(state)
 }
 
 #' Information used to connect to Auth0.
